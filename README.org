@@ -1,0 +1,8 @@
+#+title: IMAS-ParaView
+Flake to make an environment for [[https://www.paraview.org][ParaView]] with [[https://github.com/iterorganization/IMAS-ParaView][IMAS-ParaView]] plugins
+available.
+
+Builds derivations for:
+- [[https://pypi.org/project/imas-paraview/]]
+- [[https://pypi.org/project/imas-python/]]
+- [[https://pypi.org/project/saxonche/]]
