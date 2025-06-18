@@ -2,7 +2,9 @@
   python,
   buildPythonPackage,
   fetchPypi,
+  libz,
   cython,
+  autoPatchelfHook,
 }:
 buildPythonPackage rec {
   disabled = !python.isPy310;
@@ -17,5 +19,9 @@ buildPythonPackage rec {
     abi = "cp310";
     platform = "manylinux_2_24_x86_64";
   };
-  buildInputs = [ cython ];
+  buildInputs = [
+    libz
+    cython
+  ];
+  nativeBuildInputs = [ autoPatchelfHook ];
 }
