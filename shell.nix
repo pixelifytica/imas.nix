@@ -1,19 +1,19 @@
 {
-  pkgs ? (import <nixpkgs> { }),
+  pkgs ? import <nixpkgs> { },
+  python3 ? pkgs.python3Full,
 }:
 let
-  python = pkgs.python310Full.override {
+  py = python3.override {
     packageOverrides = final: prev: {
       saxonche = final.callPackage ./saxonche.nix { };
       imas-python = final.callPackage ./imas-python.nix { };
       imas-paraview = final.callPackage ./imas-paraview.nix { };
     };
   };
-  pythonEnv = python.withPackages (ps: with ps; [ imas-paraview ]);
 in
 pkgs.mkShell {
-  packages = with pkgs; [
-    paraview
-    pythonEnv
+  packages = [
+    pkgs.paraview
+    (py.withPackages (ps: [ ps.imas-paraview ]))
   ];
 }

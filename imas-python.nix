@@ -2,6 +2,7 @@
   buildPythonPackage,
   fetchPypi,
   setuptools,
+  setuptools-scm,
   numpy,
   rich,
   scipy,
@@ -9,7 +10,7 @@
   packaging,
   xxhash,
   saxonche,
-  # gitpython,
+  gitpython,
   netcdf4,
 }:
 buildPythonPackage rec {
@@ -23,8 +24,10 @@ buildPythonPackage rec {
   };
   build-system = [
     setuptools
+    setuptools-scm
     numpy
     saxonche
+    gitpython
   ];
   dependencies = [
     numpy
@@ -34,7 +37,7 @@ buildPythonPackage rec {
     packaging
     xxhash
     saxonche
-    # gitpython
+    gitpython
     netcdf4
   ];
 }
