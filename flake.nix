@@ -16,12 +16,15 @@
     in
     {
       packages.${system} = {
-        simdb = pkgs.python3Packages.toPythonApplication pkgs.python3.pkgs.imas-simdb;
+        inherit (pkgs) simdb;
         default = self.packages.${system}.simdb;
       };
       overlays.default =
         final: prev:
-        (builtins.listToAttrs (
+        {
+          simdb = final.python3Packages.toPythonApplication final.python3.pkgs.imas-simdb;
+        }
+        // (builtins.listToAttrs (
           builtins.map (name: {
             inherit name;
             value = prev.${name}.override {
