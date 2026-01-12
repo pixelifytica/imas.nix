@@ -1,4 +1,5 @@
 {
+  description = "Overlay to add various IMAS tools to nixpkg Python packages.";
   outputs =
     {
       self,
@@ -6,31 +7,34 @@
     }:
     let
       system = "x86_64-linux";
+      supportedPython = [
+        "python311"
+        "python312"
+        "python313"
+      ];
       pkgs = (nixpkgs.legacyPackages.${system}.extend self.overlays.default);
     in
     {
       packages.${system} = {
-        inherit (pkgs.python3Packages) saxonche imas-python imas-paraview;
-        default = self.packages.${system}.imas-paraview;
+        simdb = pkgs.python3Packages.toPythonApplication pkgs.python3.pkgs.imas-simdb;
+        default = self.packages.${system}.simdb;
       };
-      overlays.default = final: prev: {
-        python3 = prev.python310.override {
-          packageOverrides = pfinal: pprev: {
-            numpy = pfinal.numpy_1;
-            saxonche = pfinal.callPackage ./saxonche.nix { };
-            imas-python = pfinal.callPackage ./imas-python.nix { };
-            imas-paraview = pfinal.callPackage ./imas-paraview.nix { };
-          };
-        };
-        python3Packages = final.python3.pkgs;
-      };
-      devShell.${system} =
-        with pkgs;
-        mkShell {
-          packages = [
-            paraview
-            (python3.withPackages (ps: [ ps.imas-paraview ]))
-          ];
-        };
+      overlays.default =
+        final: prev:
+        (builtins.listToAttrs (
+          builtins.map (name: {
+            inherit name;
+            value = prev.${name}.override {
+              packageOverrides = pfinal: pprev: {
+                imas-core = pfinal.callPackage ./imas-core.nix { };
+                imas-data-dictionaries = pfinal.callPackage ./imas-data-dictionaries.nix { };
+                imas-python = pfinal.callPackage ./imas-python.nix { };
+                imas-simdb = pfinal.callPackage ./imas-simdb.nix { };
+                imas-paraview = pfinal.callPackage ./imas-paraview.nix { };
+              };
+            };
+          }) supportedPython
+        ));
+      devShells.${system}.default = pkgs.callPackage ./shell.nix { };
     };
 }

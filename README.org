@@ -1,8 +1,9 @@
-#+title: IMAS-ParaView
-Flake to make an environment for [[https://www.paraview.org][ParaView]] with [[https://github.com/iterorganization/IMAS-ParaView][IMAS-ParaView]] plugins
-available.
+#+title: IMAS-Python Tools for Nix
+Overlay to add various IMAS tools to nixpkg Python packages.
 
-Builds derivations for:
-- [[https://pypi.org/project/imas-paraview/]]
-- [[https://pypi.org/project/imas-python/]]
-- [[https://pypi.org/project/saxonche/]]
+Builds:
+- [[https://github.com/iterorganization/IMAS-Core]]
+- [[https://github.com/iterorganization/IMAS-Data-Dictionaries]]
+- [[https://github.com/iterorganization/IMAS-Python]]
+- [[https://github.com/iterorganization/IMAS-Paraview]]
+- [[https://github.com/iterorganization/SimDB]]

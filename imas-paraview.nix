@@ -1,6 +1,6 @@
 {
   buildPythonPackage,
-  fetchPypi,
+  fetchFromGitHub,
   setuptools,
   numpy,
   vtk,
@@ -10,10 +10,11 @@ buildPythonPackage rec {
   pname = "imas-paraview";
   version = "2.1.0";
   pyproject = true;
-  src = fetchPypi {
-    inherit version;
-    pname = "imas_paraview";
-    sha256 = "e7250efcf0d3d8a937de710e1d1557c7f2715dcc48fd7bd0691435565587372d";
+  src = fetchFromGitHub {
+    owner = "iterorganization";
+    repo = "IMAS-Python";
+    rev = version;
+    hash = "sha256-o9T9eKla09J89DxEHDSxSrQ4WFrf4GKNWbN9SFL0V/M=";
   };
   build-system = [ setuptools ];
   dependencies = [
