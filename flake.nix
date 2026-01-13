@@ -16,13 +16,14 @@
     in
     {
       packages.${system} = {
-        inherit (pkgs) simdb;
+        inherit (pkgs) simdb imas-paraview;
         default = self.packages.${system}.simdb;
       };
       overlays.default =
         final: prev:
         {
           simdb = final.python3Packages.toPythonApplication final.python3.pkgs.imas-simdb;
+          imas-paraview = final.python3Packages.toPythonApplication final.python3.pkgs.imas-paraview;
         }
         // (builtins.listToAttrs (
           builtins.map (name: {
