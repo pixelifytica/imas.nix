@@ -1,22 +1,32 @@
 {
+  pythonOlder,
   buildPythonPackage,
   fetchFromGitHub,
   setuptools,
+  setuptools-scm,
+  wheel,
+  tomli,
   numpy,
   vtk,
   imas-python,
 }:
 buildPythonPackage rec {
+  disabled = pythonOlder "3.8";
   pname = "imas-paraview";
   version = "2.1.0";
   pyproject = true;
   src = fetchFromGitHub {
     owner = "iterorganization";
-    repo = "IMAS-Python";
+    repo = "IMAS-Paraview";
     rev = version;
-    hash = "sha256-o9T9eKla09J89DxEHDSxSrQ4WFrf4GKNWbN9SFL0V/M=";
+    hash = "sha256-N6dLEpzMK0DJsO1/gSBdGtyJJj2jgmIelKstSYYnzLM=";
   };
-  build-system = [ setuptools ];
+  build-system = [
+    setuptools
+    wheel
+    setuptools-scm
+  ]
+  ++ (if pythonOlder "3.11" then [ tomli ] else [ ]);
   dependencies = [
     numpy
     vtk
