@@ -19,6 +19,14 @@
         inherit (pkgs) simdb imas-paraview;
         default = self.packages.${system}.simdb;
       };
+      apps.${system} = {
+        simdb = {
+          type = "app";
+          program = "${self.packages.${system}.simdb}/bin/simdb";
+          description = "SimDB CLI";
+        };
+        default = self.apps.${system}.simdb;
+      };
       overlays.default =
         final: prev:
         {
@@ -39,6 +47,13 @@
             };
           }) supportedPython
         ));
-      devShells.${system}.default = pkgs.callPackage ./shell.nix { };
+      devShells.${system}.default = pkgs.mkShellNoCC {
+        env.PV_PLUGIN_PATH = "${pkgs.python3.pkgs.imas-paraview}/lib/python${pkgs.python3.pythonVersion}/site-packages/imas_paraview/plugins";
+        packages = with pkgs; [
+          simdb
+          imas-paraview
+          paraview
+        ];
+      };
     };
 }
