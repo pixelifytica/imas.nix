@@ -7,7 +7,7 @@
     }:
     let
       system = "x86_64-linux";
-      supportedPython = [
+      supportedPythons = [
         "python311"
         "python312"
         "python313"
@@ -15,10 +15,29 @@
       pkgs = (nixpkgs.legacyPackages.${system}.extend self.overlays.default);
     in
     {
-      packages.${system} = {
-        inherit (pkgs) simdb imas-paraview;
-        default = self.packages.${system}.simdb;
-      };
+      packages.${system} =
+        (builtins.listToAttrs (
+          builtins.concatMap (
+            python:
+            (builtins.map
+              (module: {
+                name = "${pkgs.${python}.libPrefix}-${module}";
+                value = pkgs.${python}.pkgs.${module};
+              })
+              [
+                "imas-core"
+                "imas-data-dictionaries"
+                "imas-python"
+                "imas-simdb"
+                "imas-paraview"
+              ]
+            )
+          ) supportedPythons
+        ))
+        // {
+          inherit (pkgs) simdb imas-paraview;
+          default = self.packages.${system}.simdb;
+        };
       apps.${system} = {
         simdb = {
           type = "app";
@@ -45,7 +64,7 @@
                 imas-paraview = pfinal.callPackage ./imas-paraview.nix { };
               };
             };
-          }) supportedPython
+          }) supportedPythons
         ));
       devShells.${system}.default = pkgs.mkShellNoCC {
         env.PV_PLUGIN_PATH = "${pkgs.python3.pkgs.imas-paraview}/lib/python${pkgs.python3.pythonVersion}/site-packages/imas_paraview/plugins";
