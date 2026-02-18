@@ -13,6 +13,20 @@
       overlays.default = final: prev: {
         pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
           (pfinal: pprev: {
+            sqlalchemy = pprev.sqlalchemy.overrideAttrs rec {
+              version = "1.4.54";
+              src = pfinal.fetchPypi {
+                inherit (pprev.sqlalchemy) pname;
+                inherit version;
+                hash = "sha256-RHD77QiMNdwgt4o5qvSuVP6BeQx4OzJkhyoCJPQ3wxo=";
+              };
+              disabledTestPaths = [
+                # typing correctness, not interesting
+                "test/ext/mypy"
+                # slow and high memory usage, not interesting
+                "test/aaa_profiling"
+              ];
+            };
             imas-core = pfinal.callPackage ./imas-core.nix { };
             imas-data-dictionaries = pfinal.callPackage ./imas-data-dictionaries.nix { };
             imas-python = pfinal.callPackage ./imas-python.nix { };
