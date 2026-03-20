@@ -1,13 +1,20 @@
 {
   description = "Overlay to add various IMAS tools to nixpkg Python packages.";
   outputs =
-    {
-      self,
-      nixpkgs,
-    }:
+    { self, nixpkgs, ... }:
     let
-      system = "x86_64-linux";
-      pkgs = (nixpkgs.legacyPackages.${system}.extend self.overlays.default);
+      supportedSystems = [
+        "x86_64-linux"
+        "x86_64-darwin"
+      ];
+      forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
+      pkgs = forAllSystems (
+        system:
+        import nixpkgs {
+          inherit system;
+          overlays = [ self.overlays.default ];
+        }
+      );
     in
     {
       overlays.default = final: prev: {
@@ -37,30 +44,32 @@
         simdb = final.python3Packages.toPythonApplication final.python3.pkgs.imas-simdb;
         imas-paraview = final.python3Packages.toPythonApplication final.python3.pkgs.imas-paraview;
       };
-      packages.${system} = {
-        inherit (pkgs) simdb imas-paraview;
+      packages = forAllSystems (system: {
+        inherit (pkgs.${system}) simdb imas-paraview;
         default = self.packages.${system}.simdb;
-      };
-      apps.${system} = {
+      });
+      apps = forAllSystems (system: {
         simdb = {
           type = "app";
           program = "${self.packages.${system}.simdb}/bin/simdb";
           description = "SimDB CLI";
         };
         default = self.apps.${system}.simdb;
-      };
-      devShells.${system}.default =
-        let
-          python3 = pkgs.python3;
-          imas-paraview = python3.pkgs.imas-paraview;
-        in
-        pkgs.mkShellNoCC {
-          env.PV_PLUGIN_PATH = "${imas-paraview}/lib/python${python3.pythonVersion}/site-packages/imas_paraview/plugins";
-          packages = [
-            pkgs.simdb
-            pkgs.paraview
-            (python3.pkgs.toPythonApplication imas-paraview)
-          ];
-        };
+      });
+      devShells = forAllSystems (system: {
+        default =
+          let
+            python3 = pkgs.${system}.python3;
+            imas-paraview = python3.pkgs.imas-paraview;
+          in
+          pkgs.${system}.mkShellNoCC {
+            env.PV_PLUGIN_PATH = "${imas-paraview}/lib/python${python3.pythonVersion}/site-packages/imas_paraview/plugins";
+            packages = [
+              pkgs.${system}.simdb
+              pkgs.${system}.paraview
+              (python3.pkgs.toPythonApplication imas-paraview)
+            ];
+          };
+      });
     };
 }
