@@ -5,6 +5,7 @@
   fetchPypi,
   autoPatchelfHook,
   libz,
+  numpy,
   ...
 }:
 let
@@ -37,6 +38,11 @@ buildPythonPackage rec {
     abi = dist;
     platform = "manylinux_2_28_x86_64";
   };
-  buildInputs = [ libz ];
-  nativeBuildInputs = [ autoPatchelfHook ];
+  buildInputs = [
+    libz
+    numpy
+  ];
+  nativeBuildInputs = [
+    autoPatchelfHook
+  ];
 }
